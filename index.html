@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +9,12 @@
     <style>
         /* Custom aspect ratio for portrait video */
         .aspect-w-9 {
-            padding-bottom: 177.78%; /* 9/16 * 100% */
+            padding-bottom: 177.78%;
+            /* 9/16 * 100% */
         }
     </style>
 </head>
+
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
     <header class="bg-blue-600 text-white py-4 shadow-md">
         <div class="container mx-auto text-center">
@@ -112,26 +115,33 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const videos = document.querySelectorAll('video');
-            
-            videos.forEach((video, index) => {
-                // Add a unique ID to each video
-                video.id = `video-${index + 1}`;
-                
-                video.addEventListener('play', function() {
-                    pauseOtherVideos(this);
-                });
-            });
-            
-            function pauseOtherVideos(currentVideo) {
-                videos.forEach(video => {
-                    if (video !== currentVideo && !video.paused) {
-                        video.pause();
+            const videos = document.querySelectorAll('video, iframe');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.tagName === 'VIDEO') {
+                            entry.target.play();
+                        } else if (entry.target.tagName === 'IFRAME') {
+                            entry.target.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                        }
+                    } else {
+                        if (entry.target.tagName === 'VIDEO') {
+                            entry.target.pause();
+                        } else if (entry.target.tagName === 'IFRAME') {
+                            entry.target.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                        }
                     }
                 });
-            }
+            }, {
+                threshold: 0.5
+            });
+
+            videos.forEach(video => {
+                observer.observe(video);
+            });
         });
     </script>
-    
 </body>
+
 </html>
