@@ -110,10 +110,28 @@
             <!-- Tambahkan lebih banyak film di sini -->
         </div>
     </main>
-    <footer class="bg-gray-800 text-white py-4 mt-auto">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Movie List. All rights reserved.</p>
-        </div>
-    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videos = document.querySelectorAll('video');
+            
+            videos.forEach((video, index) => {
+                // Add a unique ID to each video
+                video.id = `video-${index + 1}`;
+                
+                video.addEventListener('play', function() {
+                    pauseOtherVideos(this);
+                });
+            });
+            
+            function pauseOtherVideos(currentVideo) {
+                videos.forEach(video => {
+                    if (video !== currentVideo && !video.paused) {
+                        video.pause();
+                    }
+                });
+            }
+        });
+    </script>
+    
 </body>
 </html>
